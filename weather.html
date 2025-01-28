@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="weatherApp">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Weather Dashboard</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+  <style>
+    body {
+      font-family: Georgia, serif;
+      margin: 20px;
+      line-height: 1.6;
+      color: #202124;
+      background-color: #ffffff;
+    }
+
+    h1, h2 {
+      font-size: 1.5em;
+      margin: 0.5em 0;
+    }
+
+    a {
+      color: #1155cc;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .search-bar {
+      margin-bottom: 20px;
+    }
+
+    .search-bar input {
+      width: calc(100% - 120px);
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+    }
+
+    .search-bar button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background: #1155cc;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    }
+
+    .search-bar button:hover {
+      background: #0d47a1;
+    }
+
+    .weather-details, .favorites {
+      margin-top: 20px;
+      border: 1px solid #ccc;
+      padding: 15px;
+      background: #f9f9f9;
+    }
+
+    .weather-details h2 {
+      margin-top: 0;
+    }
+
+    .error-message {
+      margin-top: 20px;
+      padding: 10px;
+      border: 1px solid #d32f2f;
+      background: #ffdddd;
+      color: #d32f2f;
+    }
+  </style>
+</head>
+<body ng-controller="WeatherController">
+  <div class="container">
+    <h1>Weather Dashboard</h1>
+    <div class="search-bar">
+      <input type="text" ng-model="city" placeholder="Enter city name" />
+      <button ng-click="getWeather()">Get Weather</button>
+    </div>
+
+    <!-- Weather Details -->
+    <div class="weather-details" ng-if="weather">
+      <h2>Weather in {{ weather.name }}</h2>
+      <p><strong>Temperature:</strong> {{ weather.main.temp }}°C</p>
+      <p><strong>Humidity:</strong> {{ weather.main.humidity }}%</p>
+      <p><strong>Condition:</strong> {{ weather.weather[0].description }}</p>
+      <button ng-click="addFavorite(weather.name)">Add to Favorites</button>
+    </div>
+
+    <!-- Error Message -->
+    <div class="error-message" ng-if="errorMessage">
+      <p>{{ errorMessage }}</p>
+    </div>
+
+    <!-- Favorite Cities -->
+    <div class="favorites" ng-if="favorites.length > 0">
+      <h2>Favorite Cities</h2>
+      <ul>
+        <li ng-repeat="city in favorites | orderBy">{{ city }}</li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    const app = angular.module("weatherApp", []);
+
+    app.controller("WeatherController", function ($scope, $http) {
+      const API_KEY = "8340dd4cd2d28e729a40aeaa8b8a18ed";
+
+      $scope.city = "";
+      $scope.weather = null;
+      $scope.errorMessage = null;
+      $scope.favorites = [];
+
+      $scope.getWeather = function () {
+        if (!$scope.city) {
+          $scope.errorMessage = "Please enter a city name.";
+          return;
+        }
+
+        const baseUrl = "http://api.openweathermap.org/data/2.5/weather";
+        const url = `${baseUrl}?appid=${API_KEY}&q=${$scope.city}&units=metric`;
+
+        $http.get(url).then(
+          function (response) {
+            $scope.weather = response.data;
+            $scope.errorMessage = null;
+          },
+          function () {
+            $scope.weather = null;
+            $scope.errorMessage = "City not found or API error. Please try again.";
+          }
+        );
+      };
+
+      $scope.addFavorite = function (city) {
+        if (!$scope.favorites.includes(city)) {
+          $scope.favorites.push(city);
+        }
+      };
+    });
+  </script>
+</body>
+</html>
