@@ -9,6 +9,10 @@
 
 
 [2](https://github.com/jsshashank/WEB-TECHNOLOGIES-2025/blob/main/PersonalFinancetracker.html)
+# Lab Assignment-2.2
+[https://github.com/jsshashank/WEB-TECHNOLOGIES-2025/blob/main/StudentManagementSystem.html]
+
+
 
 
 
